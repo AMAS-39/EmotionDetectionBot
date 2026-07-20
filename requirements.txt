@@ -2,5 +2,5 @@ gradio
 deepface
 tensorflow-cpu
 tf-keras
-opencv-python
+opencv-python-headless==4.10.0.84
 numpy<2.0
