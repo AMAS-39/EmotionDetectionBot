@@ -1,0 +1,6 @@
+gradio
+deepface
+tensorflow-cpu
+tf-keras
+opencv-python
+numpy<2.0
