@@ -1,6 +1,7 @@
-gradio
-deepface
+gradio>=4.44.0
+deepface>=0.0.93
 tensorflow-cpu
 tf-keras
 opencv-python-headless==4.10.0.84
 numpy<2.0
+Pillow
