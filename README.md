@@ -8,73 +8,90 @@ app_file: web_app.py
 pinned: false
 ---
 
+<div align="center">
+
 # AI Facial Expression Detection Bot
 
-A real-time facial expression analyzer that detects a face, estimates the dominant expression, and replies with a short supportive message.
+**Detect a face. Estimate the expression. Get a short supportive reply.**
 
-Built with **DeepFace**, **OpenCV**, and **Gradio** — available as both a web app and a desktop webcam app.
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![DeepFace](https://img.shields.io/badge/AI-DeepFace-0EA5E9?style=for-the-badge)](https://github.com/serengil/deepface)
+[![OpenCV](https://img.shields.io/badge/Vision-OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)](https://opencv.org/)
+[![Gradio](https://img.shields.io/badge/UI-Gradio-F97316?style=for-the-badge)](https://www.gradio.app/)
+[![TensorFlow](https://img.shields.io/badge/Backend-TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+
+[Features](#-features) ·
+[Quick Start](#-quick-start) ·
+[Usage](#-usage) ·
+[How It Works](#-how-it-works) ·
+[Project Structure](#-project-structure) ·
+[Troubleshooting](#-troubleshooting)
+
+</div>
+
+---
+
+## About
+
+This project uses computer vision to estimate the **dominant facial expression** from a webcam photo or uploaded image.
+
+It ships in two modes:
+
+| Mode | File | Best for |
+| --- | --- | --- |
+| **Web app** | `web_app.py` | Browser demo, Hugging Face Spaces, Render |
+| **Desktop app** | `app.py` | Live local webcam window |
+
+> This is **not** a chatbot LLM. The AI is **DeepFace** facial expression recognition.
 
 ---
 
 ## Features
 
-- Detect faces from a **webcam snapshot** or **uploaded image**
-- Estimate one of **7 facial expressions** with a confidence score
-- Draw a bounding box around the detected face
-- Return a short **bot response** based on the expression
-- Run in the **browser** (`web_app.py`) or as a **desktop OpenCV window** (`app.py`)
+- Webcam snapshot **or** image upload
+- Detects **7 expressions** with a confidence score
+- Draws a face bounding box on the result
+- Returns a short **bot response** for the detected expression
+- Web UI built with Gradio
+- Desktop live mode with OpenCV
+- Production-friendly warmup so models load at startup
 
 ---
 
 ## Supported Expressions
 
-| Expression | Label |
-| --- | --- |
-| Happy | `happy` |
-| Sad | `sad` |
-| Angry | `angry` |
-| Surprise | `surprise` |
-| Fear | `fear` |
-| Disgust | `disgust` |
-| Neutral | `neutral` |
+| Expression | Label | Example bot tone |
+| --- | --- | --- |
+| Happy | `happy` | Encouraging |
+| Sad | `sad` | Supportive |
+| Angry | `angry` | Calming |
+| Surprise | `surprise` | Curious |
+| Fear | `fear` | Reassuring |
+| Disgust | `disgust` | Neutral |
+| Neutral | `neutral` | Steady / focused |
 
 ---
 
 ## Tech Stack
 
-| Tool | Role |
+| Layer | Tools |
 | --- | --- |
-| [DeepFace](https://github.com/serengil/deepface) | Facial expression recognition |
-| [OpenCV](https://opencv.org/) | Image processing & face detection |
-| [TensorFlow](https://www.tensorflow.org/) | Deep learning backend for DeepFace |
-| [Gradio](https://www.gradio.app/) | Browser UI for the web app |
-| NumPy | Image array handling |
+| Expression AI | [DeepFace](https://github.com/serengil/deepface) |
+| Face detection / vision | [OpenCV](https://opencv.org/) |
+| Deep learning backend | [TensorFlow](https://www.tensorflow.org/) + `tf-keras` |
+| Web interface | [Gradio](https://www.gradio.app/) |
+| Arrays / images | NumPy, Pillow |
 
 ---
 
-## Project Structure
+## Quick Start
 
-```text
-EmotionDetectionBot/
-├── web_app.py          # Gradio web interface (Hugging Face Spaces entrypoint)
-├── app.py              # Desktop webcam app (OpenCV live window)
-├── requirements.txt    # Python dependencies
-├── packages.txt        # System packages for Hugging Face Spaces
-└── README.md
-```
-
----
-
-## Installation
-
-**Requirements:** Python 3.10+ recommended, a webcam (for live use)
+**Requirements:** Python **3.10+**, webcam optional (needed for live capture)
 
 ```bash
-# Clone the repository
 git clone https://github.com/AMAS-39/EmotionDetectionBot.git
 cd EmotionDetectionBot
 
-# Create and activate a virtual environment
 python -m venv venv
 
 # Windows
@@ -83,58 +100,114 @@ venv\Scripts\activate
 # macOS / Linux
 # source venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-> First run may download DeepFace model weights automatically.
+> First startup may download DeepFace model weights automatically.
 
 ---
 
 ## Usage
 
-### Web app (Gradio)
+### 1) Web app (recommended)
 
 ```bash
 python web_app.py
 ```
 
-Then open the local URL shown in the terminal (usually `http://127.0.0.1:7860`).
+Open the local URL from the terminal (usually `http://127.0.0.1:7860`).
 
 1. Allow camera access **or** upload an image  
 2. Click **Analyze Expression**  
-3. View the detected expression, confidence, and bot response  
+3. Check expression, confidence, and bot response  
 
-### Desktop webcam app
+### 2) Desktop webcam app
 
 ```bash
 python app.py
 ```
 
-- Looks at your webcam in real time  
-- Analyzes expressions about once per second  
+- Analyzes your face about once per second  
+- Shows live emotion + bot message on screen  
 - Press **Q** to quit  
 
 ---
 
 ## How It Works
 
-1. **Capture** — take a webcam frame or load an uploaded image  
-2. **Detect** — locate the face with OpenCV  
-3. **Analyze** — run DeepFace emotion classification on the face  
-4. **Respond** — map the top expression to a confidence score and a short bot message  
+```text
+Image / Webcam
+      │
+      ▼
+ Face detection (OpenCV)
+      │
+      ▼
+ Emotion classification (DeepFace)
+      │
+      ▼
+ Confidence + bot response
+```
 
-The desktop app also smooths recent predictions so the label does not jump every frame.
+1. **Capture** — webcam frame or uploaded image  
+2. **Detect** — find the face region  
+3. **Analyze** — classify expression with DeepFace  
+4. **Respond** — map the top label to a short message  
+
+The desktop app also averages recent predictions so the label does not jump every frame.
+
+---
+
+## Project Structure
+
+```text
+EmotionDetectionBot/
+├── web_app.py           # Gradio web app (Spaces / Render entrypoint)
+├── app.py               # Desktop OpenCV live app
+├── requirements.txt     # Python dependencies
+├── packages.txt         # System packages for Hugging Face Spaces
+├── .python-version      # Preferred Python version
+├── .gitignore
+└── README.md
+```
+
+---
+
+## Deployment Notes
+
+| Platform | Entry file | Notes |
+| --- | --- | --- |
+| Hugging Face Spaces | `web_app.py` | Uses Gradio SDK metadata at the top of this README |
+| Render | `web_app.py` | Needs enough RAM for TensorFlow (512MB free tier is often too small) |
+
+Useful production behavior already included in `web_app.py`:
+
+- model warmup at startup  
+- writable DeepFace cache directory  
+- Gradio queue for longer inference  
+
+---
+
+## Troubleshooting
+
+| Problem | What to try |
+| --- | --- |
+| `Analysis failed` in production | Check deploy logs for TensorFlow / memory errors |
+| `No face detected` | Better lighting, face the camera, try an uploaded photo |
+| First click is very slow | Normal while models download; wait for warmup to finish |
+| App crashes on free hosting | Move to a plan with more RAM, or use Hugging Face Spaces |
+| Webcam blocked in browser | Allow camera permission, or use **Upload** instead |
 
 ---
 
 ## Disclaimer
 
-This project estimates **visible facial expressions** from an image or video frame.  
-It does **not** diagnose emotions, mental health, or intent. Treat results as an approximate visual estimate only.
+This project estimates **visible facial expressions** from an image or video frame.
+
+It does **not** diagnose emotions, mental health, or intent.  
+Treat results as an approximate visual estimate only.
 
 ---
 
 ## License
 
-This project is available for educational and personal use.
+Educational and personal use.
